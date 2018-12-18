@@ -282,6 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 		<template id="hero-select-template">
 			<select name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control">
+				<option value="No Hero" selected>No Hero</option>
 				<option value="Ana" selected>Ana</option>
 				<option value="Bastion">Bastion</option>
 				<option value="Brigitte">Brigitte</option>
