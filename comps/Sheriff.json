@@ -2,14 +2,15 @@
     "name": "Sheriff",
     "comp": [
         [
+            "Orisa",
             "Reinhardt",
             "Winston"
         ],
         "DVa",
         "McCree",
         "Brigitte",
-        "Zenyatta",
-        "Lucio"
+        "Lucio",
+        "Zenyatta"
     ],
-    "description": "This is still in the works"
+    "description": "All 3 main tanks can be used. Orisa was by South Korea in the world cup on Ilios well."
 }
