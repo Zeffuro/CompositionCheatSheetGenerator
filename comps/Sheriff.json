@@ -1,0 +1,15 @@
+{
+    "name": "Sheriff",
+    "comp": [
+        [
+            "Reinhardt",
+            "Winston"
+        ],
+        "DVa",
+        "McCree",
+        "Brigitte",
+        "Zenyatta",
+        "Lucio"
+    ],
+    "description": "This is still in the works"
+}

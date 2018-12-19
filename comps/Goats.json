@@ -1,0 +1,16 @@
+{
+	"name": "Goats",
+	"comp": [
+		"Reinhardt",
+		"Zarya",
+		"DVa",
+		"Brigitte",
+		[
+			"Moira",
+			"Ana",
+			"Zenyatta"
+		],
+		"Lucio"
+	],
+	"Description": "This will get edited in later."
+}
