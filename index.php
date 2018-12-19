@@ -1,200 +1,263 @@
 <?php
 
-function createComp($comp){
+function wordWrapAnnotation(&$image, &$draw, $text, $maxWidth)
+{
+   $regex = '/( |(?=\p{Han})(?<!\p{Pi})(?<!\p{Ps})|(?=\p{Pi})|(?=\p{Ps}))/u';
+   $cleanText = trim(preg_replace('/[\s\v]+/', ' ', $text));
+   $strArr = preg_split($regex, $cleanText, -1, PREG_SPLIT_DELIM_CAPTURE |
+                                                PREG_SPLIT_NO_EMPTY);
+   $linesArr = array();
+   $lineHeight = 0;
+   $goodLine = '';
+   $spacePending = false;
+   
+   foreach ($strArr as $str) {
+      if ($str == ' ') {
+         $spacePending = true;
+      } else {
+         if ($spacePending) {
+            $spacePending = false;
+            $line = $goodLine.' '.$str;
+         } else {
+            $line = $goodLine.$str;
+         }
+         $metrics = $image->queryFontMetrics($draw, $line);
+         if ($metrics['textWidth'] > $maxWidth) {
+            if ($goodLine != '') {
+               $linesArr[] = $goodLine;
+            }
+            $goodLine = $str;
+         } else {
+            $goodLine = $line;
+         }
+         if ($metrics['textHeight'] > $lineHeight) {
+            $lineHeight = $metrics['textHeight'];
+         }
+      }
+   }
+   if ($goodLine != '') {
+      $linesArr[] = $goodLine;
+   }
+
+   return [$linesArr, $lineHeight];
+}
+
+function createComp($comp)
+{
 	$image = new Imagick();
 	$draw = new ImagickDraw();
 	$bgpixel = new ImagickPixel("black");
-	$image->newImage(900, 250, $bgpixel);
-	$image->setImageFormat("png");
+	$height = 260;
 	
+	if($comp["desc-enabled"]){
+		$description = $comp["description"];
+		
+		$draw->setFontSize(30);
+		list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $description, 850);
+		$height+= $lineHeight * count($lines);
+	}
+	
+	$image->newImage(900, $height, $bgpixel);
+	$image->setImageFormat("png");
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
 	$draw->setFontSize(80);
 	$draw->setFillColor("white");
-	
 	$image->annotateImage($draw, 20, 80, 0, $comp["name"]);
-	
 	$x = 20;
 	$y = 100;
-	
-	foreach($comp["comp"] as $hero){
+	foreach($comp["comp"] as $hero)
+	{
 		$newheroes = loadHeroes();
-		if(gettype($hero) == "array"){
-			switch(count($hero)){
-				case 2:
-					$i = 0;
-					foreach($hero as $subhero){
-						$i++;
-						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
-						if($i == 1){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 45, $y + 40);
-						}else{
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 5, $y);
-						}
+		if (gettype($hero) == "array")
+		{
+			switch (count($hero))
+			{
+			case 2:
+				$i = 0;
+				foreach($hero as $subhero)
+				{
+					$i++;
+					$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+					if ($i == 1)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 45, $y + 40);
 					}
-					break;
-				case 3:
-					$i = 0;
-					foreach($hero as $subhero){
-						$i++;
-						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
-						if($i == 1){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 50, $y + 40);
-						}else if($i == 2){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x, $y + 40);
-						}else{
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 25, $y - 5);
-						}
+					else
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 5, $y);
 					}
-					break;
-				case 4:
-					$i = 0;
-					foreach($hero as $subhero){
-						$i++;
-						$newheroes[$subhero]->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1);
-						if($i == 1){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 35, $y + 50);
-						}else if($i == 2){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x - 10, $y + 50);
-						}else if($i == 3){
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 15, $y + 10);
-						}else{
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 65, $y + 10);
-						}
+				}
+
+				break;
+
+			case 3:
+				$i = 0;
+				foreach($hero as $subhero)
+				{
+					$i++;
+					$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+					if ($i == 1)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 50, $y + 40);
 					}
-					break;
+					else
+					if ($i == 2)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x, $y + 40);
+					}
+					else
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 25, $y - 5);
+					}
+				}
+
+				break;
+
+			case 4:
+				$i = 0;
+				foreach($hero as $subhero)
+				{
+					$i++;
+					$newheroes[$subhero]->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1);
+					if ($i == 1)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 35, $y + 50);
+					}
+					else
+					if ($i == 2)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x - 10, $y + 50);
+					}
+					else
+					if ($i == 3)
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 15, $y + 10);
+					}
+					else
+					{
+						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 65, $y + 10);
+					}
+				}
+
+				break;
 			}
-		}else{
+		}
+		else
+		{
 			$image->compositeImage($newheroes[$hero], Imagick::COMPOSITE_DEFAULT, $x, $y);
 		}
-		$x += 135.5;
+
+		$x+= 135.5;
 	}
-	
-	return $image;
+
+	$x = 20;
+	$y = 260;
+	$draw->setFontSize(30);
+
+	if($comp["desc-enabled"]){
+		for ($k = 0; $k < count($lines); $k++)
+		{
+			$image->annotateImage($draw, $x, $y + $k * $lineHeight, 0, $lines[$k]);
+		}
+	}
+	return [$image, $height];
 }
 
-function loadHeroes(){
-	// Load heroes
-	$heroes = array();
+function loadHeroes()
+{
 
-	foreach(array_diff(scandir("./assets/heroes"), array('..', '.')) as $file){
+	// Load heroes
+
+	$heroes = array();
+	foreach(array_diff(scandir("./assets/heroes") , array(
+		'..',
+		'.'
+	)) as $file)
+	{
 		$name = str_replace(".png", "", $file);
 		$heroes[$name] = new Imagick();
 		$heroes[$name]->readImage("./assets/heroes/{$file}");
 		$heroes[$name]->resizeImage($heroes[$name]->getImageWidth() / 2, $heroes[$name]->getImageWidth() / 2, Imagick::FILTER_LANCZOS, 1);
 	}
-	
+
 	return $heroes;
 }
 
-function processPost(){
-	$allComps = array();	
-	$compAmount = sizeof($_POST) / 7;	
-	
-	for($i = 1; $i <= $compAmount; $i++){
+function processPost()
+{
+	$allComps = array();
+	$compAmount = sizeof($_POST) / 8;
+	for ($i = 1; $i <= $compAmount; $i++)
+	{
 		$comp = array();
-		for($j = 1; $j <= 6; $j++){
-			if(sizeof($_POST["comp{$i}-hero{$j}"]) == 1){
+		for ($j = 1; $j <= 6; $j++)
+		{
+			if (sizeof($_POST["comp{$i}-hero{$j}"]) == 1)
+			{
 				array_push($comp, $_POST["comp{$i}-hero{$j}"][0]);
-			}else{
+			}
+			else
+			{
 				$multihero = array();
-				foreach($_POST["comp{$i}-hero{$j}"] as $hero){
+				foreach($_POST["comp{$i}-hero{$j}"] as $hero)
+				{
 					array_push($multihero, $hero);
 				}
+
 				array_push($comp, $multihero);
 			}
 		}
-		
+
 		$finalComp = array(
 			"name" => $_POST["comp{$i}-name"],
-			"comp" => $comp
+			"comp" => $comp,
+			"desc-enabled" => isset($_POST["comp{$i}-desc-enabled"]),
+			"description" => $_POST["comp{$i}-desc"]
 		);
 		array_push($allComps, $finalComp);
 	}
+
 	return $allComps;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-	
-		
-
-	/* TEST COMPS
-	$comp1 = array(
-		"name" => "Goats",
-		"comp" => array(
-			"Reinhardt",
-			"Zarya",
-			"DVa",
-			"Brigitte",
-			array(
-				"Zenyatta",
-				"Ana",
-				"Moira"
-			),
-			"Mei"
-		)
-	);
-	
-	echo "<br /><br /><br />";
-	print_r($comp1);
-
-	$comp2 = array(
-		"name" => "Goats",
-		"comp" => array(
-			array(
-				"Reinhardt",
-				"Winston"
-			),
-			"Zarya",
-			"DVa",
-			"Brigitte",
-			array(
-				"Zenyatta",
-				"Ana",
-				"Moira",
-				"Lucio"
-			),
-			"Mei"
-		)
-	);
-	
-	$comps = array($comp1, $comp2);
-	*/
-	
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
 	$comps = processPost();
-
 	$image = new Imagick();
 	$draw = new ImagickDraw();
 	$bgpixel = new ImagickPixel("black");
-
 	$width = 900;
-	$height = (count($comps) * 250) + 150;
+	$height = 150;
+	$imagesToDraw = [];
+	foreach($comps as $comp)
+	{
+		$comp = createComp($comp);
+		$height+= $comp[1];
+		array_push($imagesToDraw, $comp);
+	}
 
 	$image->newImage($width, $height, $bgpixel);
 	$image->setImageFormat("png");
-
 	$draw->setFillColor("white");
-
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
 	$draw->setFontSize(100);
-
 	$image->annotateImage($draw, 20, 100, 0, "Composition Cheat Sheet");
-
 	$draw->setFontSize(80);
-
 	$y = 150;
-	foreach($comps as $comp){
-		$comp = createComp($comp, $heroes);
-		$image->compositeImage($comp, Imagick::COMPOSITE_DEFAULT, 20, $y);
-		$y += 250;
+	
+	foreach($imagesToDraw as $compImage)
+	{
+		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $y);
+		$y+= $compImage[1];
 	}
 	
 	header("Content-Type: image/png");
-	//echo $comp;
 	echo $image;
-
-}else{
+}
+else
+{
 ?>
 
 <!doctype html>
@@ -239,6 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			<div class="row">
 				<div class='col-md-auto'>
 					<div class="btn-group-vertical">
+						<label for="comp[i]-name">Composition name</label>
 						<input type="text" class="form-control-sm" id="comp[i]-name" name="comp[i]-name" value="Composition [i]">
 					</div>
 				</div>
@@ -258,6 +322,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 				</div>
 			</div>
 			<div class="row">
+				<div class="col-6 col-md-6 mt-4">
+					<label for="comp[i]-desc"><input type="checkbox" class="form-check-input" id="comp[i]-desc-enabled" name="comp[i]-desc-enabled" onchange="toggleDesc([i]); return false"> Description</label>
+					<textarea type="text" class="form-control" id="comp[i]-desc" name="comp[i]-desc" rows="3" disabled></textarea>
+				</div>
+			</div>
+			<div class="row">
 				<br />
 			</div>
 		</template>
@@ -265,7 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		<template id="comp-column-template">
 			<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4">
 				<div class="card">					
-					<img src="./assets/heroes/Ana.png" id="comp[i]-img[j]" width="100%"><br>
+					<img src="./assets/heroes/Ana.png" id="comp[i]-img[j]" width="100%"><br />
 					<a href="#" id="comp[i]-addHero[j]" onclick="addHero([i], [j]); return false" class="nav-link">+ Add</a>
 					<div id="hero-select"></div>
 				</div>
@@ -284,6 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			<select name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control-sm">
 				<option value="No Hero">No Hero</option>
 				<option value="Ana" selected>Ana</option>
+				<option value="Ashe">Ashe</option>
 				<option value="Bastion">Bastion</option>
 				<option value="Brigitte">Brigitte</option>
 				<option value="DVa">DVa</option>
@@ -430,39 +501,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			
 			function processCompFile(i, json) {
 				$("#comp" + i + "-name").attr("value", json.name);
-					let j = 1;
-					$.each(json.comp, function(key, value){	
-						let heroAmount = 1;
-						if($.isArray(value)){
-							heroAmount = value.length;
+				$("#comp" + i + "-desc").html(json.description);
+				let j = 1;
+				$.each(json.comp, function(key, value){	
+					let heroAmount = 1;
+					if($.isArray(value)){
+						heroAmount = value.length;
+					}
+					let difference = $("select#comp" + i + "-hero" + j).length - heroAmount;
+					console.log(difference);
+					if(difference < 0){
+						for(k = 0; k < Math.abs(difference); k++){
+							addHero(i, j);
 						}
-						let difference = $("select#comp" + i + "-hero" + j).length - heroAmount;
-						console.log(difference);
-						if(difference < 0){
-							for(k = 0; k < Math.abs(difference); k++){
-								addHero(i, j);
-							}
-						}else if (difference > 0){
-							for(k = 0; k < difference; k++){
+					}else if (difference > 0){
+						for(k = 0; k < difference; k++){
+							removeHero(i, j);
+						}
+					}
+					if($.isArray(value)){
+						for(k = 0; k < heroAmount; k++){
+							console.log(value[k]);
+							$("select#comp" + i + "-hero" + j).eq(k).val(value[k]);							
+						}
+					}else{
+						if($("select#comp" + i + "-hero" + j).length > 1){
+							for(k = 0; k <= $("select#comp" + i + "-hero" + j).length; k++){
 								removeHero(i, j);
 							}
 						}
-						if($.isArray(value)){
-							for(k = 0; k < heroAmount; k++){
-								console.log(value[k]);
-								$("select#comp" + i + "-hero" + j).eq(k).val(value[k]);							
-							}
-						}else{
-							if($("select#comp" + i + "-hero" + j).length > 1){
-								for(k = 0; k <= $("select#comp" + i + "-hero" + j).length; k++){
-									removeHero(i, j);
-								}
-							}
-							$("select#comp" + i + "-hero" + j).eq(0).val(value);
-						}
-						showHero(i, j);
-						j++;
-					});
+						$("select#comp" + i + "-hero" + j).eq(0).val(value);
+					}
+					showHero(i, j);
+					j++;
+				});
 			}
 			
 			function saveCompToFile(i) {
@@ -483,7 +555,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 					}
 				}
 				finalResult["comp"] = comp;
-				finalResult["description"] = "This is still in the works";
+				finalResult["description"] = $("#comp" + i + "-desc").val();
 				
 				let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(finalResult, null, 4));
 				let linkElement = document.createElement('a');
@@ -496,10 +568,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 				$("#comp" + i).before($("#premade-comp-select-template").html().replace(/\[i\]/g, i));
 				$("#comp" + i + "-premade").html($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, "Load premade comp"));
 				$.getJSON("./comps/getcomps.php", function(json) {
+					console.log(json);
 					$.each(json, function(key, value){
-						$("#comp" + i + "-premade").find("option").after($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, value));
+						console.log(key);
+						console.log(value);
+						$("#comp" + i + "-premade").find("option").last().after($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, value));
 					});
 				});
+			}
+			
+			function toggleDesc(i) {
+				$("#comp" + i + "-desc").attr("disabled", !$("#comp" + i + "-desc").attr("disabled"));
 			}
 			
 			var compAmount = 0;
@@ -515,4 +594,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 <?php
 }
+
 ?>
