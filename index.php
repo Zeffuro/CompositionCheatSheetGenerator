@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			<div class="row">
 				<div class='col-md-auto'>
 					<div class="btn-group-vertical">
-						<input type="text" class="form-control" id="comp[i]-name" name="comp[i]-name" value="Composition [i]">
+						<input type="text" class="form-control-sm" id="comp[i]-name" name="comp[i]-name" value="Composition [i]">
 					</div>
 				</div>
 			</div>
@@ -281,8 +281,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		</template>
 
 		<template id="hero-select-template">
-			<select name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control">
-				<option value="No Hero" selected>No Hero</option>
+			<select name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control-sm">
+				<option value="No Hero">No Hero</option>
 				<option value="Ana" selected>Ana</option>
 				<option value="Bastion">Bastion</option>
 				<option value="Brigitte">Brigitte</option>
@@ -314,8 +314,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			</select>
 		</template>
 		
+		<template id="premade-comp-select-template">
+			<div class="row">
+				<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4 btn-group" role="group">
+					<button type="button" class="btn btn-primary btn-sm" onclick="importComp([i]); return false">Import Comp</button>
+					<button type="button" class="btn btn-primary btn-sm" onclick="saveCompToFile([i]); return false">Export Comp</button>
+					&nbsp;
+					<select name="comp[i]-premade" id="comp[i]-premade" onchange="loadComp([i]); return false" class="form-control-sm">
+					</select>
+					<input type="file" accept="application/json" name="comp[i]-file" id="comp[i]-file" style="visibility: hidden;" onchange="loadCompFromCustomFile([i]); return false">
+				</div>
+			</div>
+		</template>
+		
+		<template id="premade-comp-select-options-template">
+			<option value="[comp-name]">[comp-name]</option>
+		</template>
+		
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	
@@ -349,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			}
 			
 			function removeHero(i, j) {
-				$("#comp" + i + "-hero" + j).remove();
+				$("select#comp" + i + "-hero" + j).last().remove();
 				compHeroes[i][j - 1]--;
 				
 				if(compHeroes[i][j - 1] == 1){
@@ -377,16 +394,121 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 					$(this).replaceWith($("#hero-select-template").html().replace(/\[i\]/g, compAmount).replace(/\[j\]/g, j));
 				});
 				compHeroes[compAmount] = [1, 1, 1, 1, 1, 1];
+				if(compAmount > 1){
+					location.href = "#comp" + compAmount;
+				}
+				loadCompSelectionBox(compAmount);
+			}
+			
+			function loadComp(i) {
+				let name = $("#comp" + i + "-premade").children("option:selected").val();
+				if(name != "Load premade comp"){
+					loadCompFromFile(i, name);					
+				}
+			}
+			
+			function importComp(i) {
+				$("#comp" + i + "-file").click();
+			}
+			
+			function loadCompFromCustomFile(i) {
+				let reader = new FileReader();
+				reader.onload = function(e){
+					let json = JSON.parse(reader.result);
+					processCompFile(i, json);
+				}
+				reader.readAsText($("#comp1-file")[0].files[0]);
+			}
+			
+			function loadCompFromFile(i, name) {
+				let file = "./comps/" + name + ".json";
+
+				$.getJSON(file, function(json) {
+					processCompFile(i, json);
+				});
+			}
+			
+			function processCompFile(i, json) {
+				$("#comp" + i + "-name").attr("value", json.name);
+					let j = 1;
+					$.each(json.comp, function(key, value){	
+						let heroAmount = 1;
+						if($.isArray(value)){
+							heroAmount = value.length;
+						}
+						let difference = $("select#comp" + i + "-hero" + j).length - heroAmount;
+						console.log(difference);
+						if(difference < 0){
+							for(k = 0; k < Math.abs(difference); k++){
+								addHero(i, j);
+							}
+						}else if (difference > 0){
+							for(k = 0; k < difference; k++){
+								removeHero(i, j);
+							}
+						}
+						if($.isArray(value)){
+							for(k = 0; k < heroAmount; k++){
+								console.log(value[k]);
+								$("select#comp" + i + "-hero" + j).eq(k).val(value[k]);							
+							}
+						}else{
+							if($("select#comp" + i + "-hero" + j).length > 1){
+								for(k = 0; k <= $("select#comp" + i + "-hero" + j).length; k++){
+									removeHero(i, j);
+								}
+							}
+							$("select#comp" + i + "-hero" + j).eq(0).val(value);
+						}
+						showHero(i, j);
+						j++;
+					});
+			}
+			
+			function saveCompToFile(i) {
+				let finalResult = {};
+				finalResult["name"] = $("#comp" + i + "-name").val();
 				
-				location.href = "#comp" + compAmount;
+				let comp = [];
+				
+				for(j = 1; j <= 6; j++){
+					if($("select#comp" + i + "-hero" + j).length > 1){
+						let subHeroes = [];
+						for(k = 0; k < $("select#comp" + i + "-hero" + j).length; k++){
+							subHeroes.push($("select#comp" + i + "-hero" + j).eq(k).val());
+						}
+						comp.push(subHeroes);
+					}else{
+						comp.push($("select#comp" + i + "-hero" + j).eq(0).val());
+					}
+				}
+				finalResult["comp"] = comp;
+				finalResult["description"] = "This is still in the works";
+				
+				let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(finalResult, null, 4));
+				let linkElement = document.createElement('a');
+				linkElement.setAttribute('href', dataUri);
+				linkElement.setAttribute('download', $("#comp" + i + "-name").val() + ".json");
+				linkElement.click();
+			}
+			
+			function loadCompSelectionBox(i) {
+				$("#comp" + i).before($("#premade-comp-select-template").html().replace(/\[i\]/g, i));
+				$("#comp" + i + "-premade").html($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, "Load premade comp"));
+				$.getJSON("./comps/getcomps.php", function(json) {
+					$.each(json, function(key, value){
+						$("#comp" + i + "-premade").find("option").after($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, value));
+					});
+				});
 			}
 			
 			var compAmount = 0;
 			var compHeroes = [];
 			
+			$.ajaxSetup({'cache': false});
+			
 			addComp();
 		</script>
-	
 	</form>
   </body>
 </html>
