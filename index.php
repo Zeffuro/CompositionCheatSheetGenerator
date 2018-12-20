@@ -64,6 +64,19 @@ function createComp($comp)
 	$draw->setFontSize(80);
 	$draw->setFillColor("white");
 	$image->annotateImage($draw, 20, 80, 0, $comp["name"]);
+	
+	if($comp["maps-enabled"]){
+		$x = 740;
+		$y = 15;
+		$maps = loadMaps();
+		
+		foreach($comp["maps"] as $map){
+			$image->compositeImage($maps[$map], Imagick::COMPOSITE_DEFAULT, $x, $y);
+			$x -= 65;
+		}
+		
+	}
+	
 	$x = 20;
 	$y = 100;
 	foreach($comp["comp"] as $hero)
@@ -162,14 +175,13 @@ function createComp($comp)
 			$image->annotateImage($draw, $x, $y + $k * $lineHeight, 0, $lines[$k]);
 		}
 	}
+	
 	return [$image, $height];
 }
 
 function loadHeroes()
 {
-
 	// Load heroes
-
 	$heroes = array();
 	foreach(array_diff(scandir("./assets/heroes") , array(
 		'..',
@@ -183,6 +195,23 @@ function loadHeroes()
 	}
 
 	return $heroes;
+}
+
+function loadMaps()
+{
+	// Load maps
+	$maps = array();
+	foreach(array_diff(scandir("./assets/maps/icons") , array(
+		'..',
+		'.'
+	)) as $file)
+	{
+		$name = str_replace(".png", "", $file);
+		$maps[$name] = new Imagick();
+		$maps[$name]->readImage("./assets/maps/icons/{$file}");
+		$maps[$name]->resizeImage($maps[$name]->getImageWidth() / 1.5, $maps[$name]->getImageWidth() / 1.5, Imagick::FILTER_LANCZOS, 1);
+	}
+	return $maps;
 }
 
 function processPost()
@@ -209,16 +238,17 @@ function processPost()
 				array_push($comp, $multihero);
 			}
 		}
-
+		
 		$finalComp = array(
 			"name" => $_POST["comp{$i}-name"],
 			"comp" => $comp,
 			"desc-enabled" => isset($_POST["comp{$i}-desc-enabled"]),
-			"description" => $_POST["comp{$i}-desc"]
+			"description" => $_POST["comp{$i}-desc"],
+			"maps-enabled" => isset($_POST["comp{$i}-map-enabled"]),
+			"maps" => $_POST["comp{$i}-map"]
 		);
 		array_push($allComps, $finalComp);
 	}
-
 	return $allComps;
 }
 
@@ -243,11 +273,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	$draw->setFillColor("white");
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
-	$draw->setFontSize(100);
-	$image->annotateImage($draw, 20, 100, 0, "Composition Cheat Sheet");
-	$draw->setFontSize(80);
-	$y = 150;
 	
+	$y = 0;
+	
+	if(isset($_POST["image-title-enabled"])){
+		$draw->setFontSize(100);
+		$image->annotateImage($draw, 20, 100, 0, $_POST["image-title"]);
+		$y += 120;
+	}
+	
+	$draw->setFontSize(80);
+
 	foreach($imagesToDraw as $compImage)
 	{
 		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $y);
@@ -275,7 +311,7 @@ else
     <title>Composition Cheat Sheet Builder</title>
   </head>
   <body>
-  <form action="./index.php" method="post" target="_blank">
+  <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" target="_blank">
 		<div class="container">
 			<div class="container-fluid">
 				<br />
@@ -284,12 +320,21 @@ else
 				<div class="row">
 					<br />
 				</div>
-				<div id="row-anchor"></div>
+				<div class="row">
+					<div class='col-6 col-md-6 mt-4'>
+						<label for="image-title"><input type="checkbox" class="form-check-input" id="image-title-enabled" name="image-title-enabled" onchange="toggleTitle(); return false" checked>Image title</label>
+						<input type="text" name="image-title" id="image-title" value="Composition Cheat Sheet" class="form-control">
+					</div>
+				</div>
+				<div class="row">
+					<br />
+				</div>
+				<div class="row" id="row-anchor"></div>
 				<div class="row">
 					<div class='col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4'>
-						<div class="btn-group-vertical">
-							<a href='#' id='addComp' onclick='addComp(); return false' class='nav-link'>Add composition</a>
-							<input type="submit" value="Generate" class="btn btn-primary btn-sm">
+						<div class="btn-group">
+							<a href='#' id='addComp' onclick='addComp(); return false' class='btn btn-primary btn-sm'>Add composition</a>
+							<input type="submit" value="Generate image" class="btn btn-primary btn-sm">
 						</div>
 					</div>
 				</div>
@@ -325,11 +370,39 @@ else
 			<div class="row">
 				<div class="col-6 col-md-6 mt-4">
 					<label for="comp[i]-desc"><input type="checkbox" class="form-check-input" id="comp[i]-desc-enabled" name="comp[i]-desc-enabled" onchange="toggleDesc([i]); return false"> Description</label>
-					<textarea type="text" class="form-control" id="comp[i]-desc" name="comp[i]-desc" rows="3" disabled></textarea>
+					<div class="card">
+						<textarea type="text" class="form-control" id="comp[i]-desc" name="comp[i]-desc" rows="4" disabled></textarea>
+					</div>
+				</div>
+				<div class="col-2 col-md-2 mt-2" id="comp[i]-map1-anchor"><br />
+					<label for="comp[i]-map">
+						<input type="checkbox" class="form-check-input" id="comp[i]-map-enabled" name="comp[i]-map-enabled" onchange="toggleMap([i]); return false"> 
+						Maps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#" align="right" id="comp[i]-add-map" onclick="addMap([i]); return false" hidden>+ Add map</a>
+					</label><br />
+					<div class="card">
+						<img src="./assets/maps/Blizzard World.jpg" id="comp[i]-map1-image" width="100%" class="rounded">
+						<div id="comp[i]-map1-select">
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="row">
 				<br />
+			</div>
+		</template>
+		
+		<template id="add-map-template">
+			<div class="col-2 col-md-2 mt-2" id="comp[i]-map[j]-anchor"><br />
+				<label for="comp[i]-map">					
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="#" align="right" id="comp[i]-add-map" onclick="removeMap([i], [j]); return false">- Remove</a>
+				</label><br />
+				<div class="card">
+					<img src="./assets/maps/Blizzard World.jpg" id="comp[i]-map[j]-image" width="100%" class="rounded">
+					<div id="comp[i]-map[j]-select">
+					</div>
+				</div>
 			</div>
 		</template>
 		
@@ -414,6 +487,34 @@ else
 			</select>
 		</template>
 		
+		<template id="map-select-template">
+			<select name="comp[i]-map[]" id="comp[i]-map[j]" onchange="showMap([i], [j]); return false" class="form-control-sm" disabled>
+				<option value="Adlersbrunn">Adlersbrunn</option>
+				<option value="Ayutthaya">Ayutthaya</option>
+				<option value="Black Forest">Black Forest</option>
+				<option value="Blizzard World" selected>Blizzard World</option>
+				<option value="Busan">Busan</option>
+				<option value="Castillo">Castillo</option>
+				<option value="Ecopoint Antartica">Ecopoint Antartica</option>
+				<option value="Eichenwalde">Eichenwalde</option>
+				<option value="Hanamura">Hanamura</option>
+				<option value="Hollywood">Hollywood</option>
+				<option value="Horizon Lunar Colony">Horizon Lunar Colony</option>
+				<option value="Ilios">Ilios</option>
+				<option value="Junkertown">Junkertown</option>
+				<option value="Kings Row">Kings Row</option>
+				<option value="Lijiang Tower">Lijiang Tower</option>
+				<option value="Necropolis">Necropolis</option>
+				<option value="Nepal">Nepal</option>
+				<option value="Numbani">Numbani</option>
+				<option value="Oasis">Oasis</option>
+				<option value="Route 66">Route 66</option>
+				<option value="Temple of Anubis">Temple of Anubis</option>
+				<option value="Volskaya Industries">Volskaya Industries</option>
+				<option value="Watchpoint Gibraltar">Watchpoint Gibraltar</option>
+			</select>
+		</template>
+		
 		<template id="premade-comp-select-template">
 			<div class="row">
 				<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4 btn-group" role="group">
@@ -476,16 +577,21 @@ else
 							$("#comp" + i + "-img" + j + "-anchor").html($("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero4\]/g, hero));
 							break;
 						default:
-						}
-						k++;
-					});
+					}
+					k++;
+				});
 					
 					/*
 					let hero = $("#comp" + i + "-hero" + j).children("option:selected").val();
 					$("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero1\]/g, i);
 					$("#comp" + i + "-img" + j).attr("src", "./assets/heroes/" + hero + ".png");
 					*/
-				}
+			}
+			
+			function showMap(i, j) {
+				let map = $("select#comp" + i + "-map" + j).val();
+				$("#comp" + i + "-map" + j + "-image").attr("src", "./assets/maps/" + map + ".jpg");
+			}
 			
 			function addHero(i, j) {
 				if(compHeroes[i][j - 1] == 1){
@@ -523,6 +629,18 @@ else
 				showHero(i, j);
 			}
 			
+			function addMap(i){
+				$("#comp" + i + "-map" + compMaps[i] + "-anchor").after($("#add-map-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, compMaps[i] + 1));
+				compMaps[i]++;
+				$("#comp" + i + "-map" + compMaps[i] + "-select").replaceWith($("#map-select-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, compMaps[i]));
+				$("#comp" + i + "-map" + compMaps[i]).attr("disabled", !$("#comp" + i + "-map" + compMaps[i]).attr("disabled"));
+			}
+			
+			function removeMap(i, j){
+				$("#comp" + i + "-map" + compMaps[i] + "-anchor").remove();
+				compMaps[i]--;
+			}
+			
 			function addComp() {
 				compAmount++;				
 				$("#row-anchor").before($("#comp-template").html().replace(/\[i\]/g, compAmount));
@@ -538,7 +656,11 @@ else
 					j++;
 					$(this).replaceWith($("#hero-select-template").html().replace(/\[i\]/g, compAmount).replace(/\[j\]/g, j));
 				});
+				
+				$("#comp" + compAmount + "-map1-select").replaceWith($("#map-select-template").html().replace(/\[i\]/g, compAmount).replace(/\[j\]/g, 1));
+				
 				compHeroes[compAmount] = [1, 1, 1, 1, 1, 1];
+				compMaps[compAmount] = 1;
 				if(compAmount > 1){
 					location.href = "#comp" + compAmount;
 				}
@@ -577,7 +699,7 @@ else
 				$("#comp" + i + "-name").attr("value", json.name);
 				$("#comp" + i + "-desc").html(json.description);
 				let j = 1;
-				$.each(json.comp, function(key, value){	
+				$.each(json.comp, function(key, value){
 					let heroAmount = 1;
 					if($.isArray(value)){
 						heroAmount = value.length;
@@ -609,6 +731,29 @@ else
 					showHero(i, j);
 					j++;
 				});
+				
+				compMaps[i] = 1;
+				if($("[id^=comp" + i + "-map] select").length > 1){
+					for(k = 2; k <= $("[id^=comp" + i + "-map] select").length; k++){
+						$("comp" + i + "-map" + k + "-anchor").remove();
+					}
+				}
+				
+				let l = 1;
+				$.each(json.maps, function(key, value){
+					console.log(value);
+					if(l > 1){
+						addMap(i);						
+					}else{						
+						if(!$("#comp" + i + "-map-enabled").prop("checked")){
+							$("#comp" + i + "-map-enabled").prop("checked", true);
+							toggleMap(i);
+						}
+					}
+					$("#comp" + i + "-map" + l).val(value);
+					showMap(i, l);
+					l++;
+				});
 			}
 			
 			function saveCompToFile(i) {
@@ -628,9 +773,20 @@ else
 						comp.push($("select#comp" + i + "-hero" + j).eq(0).val());
 					}
 				}
+				
+				let maps = [];
+				
+				for(l = 0; l < $("[id^=comp" + 1 + "-map] select").length; l++){
+					maps.push($("[id^=comp" + 1 + "-map] select").eq(l).val());
+				}
+								
 				finalResult["comp"] = comp;
 				finalResult["description"] = $("#comp" + i + "-desc").val();
 				
+				if($("#comp" + i + "-map-enabled").val()){
+					finalResult["maps"] = maps;
+				}
+
 				let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(finalResult, null, 4));
 				let linkElement = document.createElement('a');
 				linkElement.setAttribute('href', dataUri);
@@ -655,8 +811,18 @@ else
 				$("#comp" + i + "-desc").attr("disabled", !$("#comp" + i + "-desc").attr("disabled"));
 			}
 			
+			function toggleTitle(i) {
+				$("#image-title").attr("disabled", !$("#image-title").attr("disabled"));
+			}
+			
+			function toggleMap(i) {
+				$("[id^=comp" + i + "-map] select").attr("disabled", !$("[id^=comp" + i + "-map] select").attr("disabled"));
+				$("#comp" + i + "-add-map").attr("hidden", !$("#comp" + i + "-add-map").attr("hidden"));
+			}
+			
 			var compAmount = 0;
 			var compHeroes = [];
+			var compMaps = [];
 			
 			$.ajaxSetup({'cache': false});
 			
