@@ -71,6 +71,7 @@ function createComp($comp)
 		$newheroes = loadHeroes();
 		if (gettype($hero) == "array")
 		{
+			$hero = array_reverse($hero);
 			switch (count($hero))
 			{
 			case 2:
@@ -334,12 +335,40 @@ else
 		
 		<template id="comp-column-template">
 			<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4">
-				<div class="card">					
-					<img src="./assets/heroes/Ana.png" id="comp[i]-img[j]" width="100%"><br />
+				<div class="card">
+					<div id="comp[i]-img[j]-anchor">
+						<img src="./assets/heroes/Ana.png" id="comp[i]-img[j]" width="100%">
+					</div>
 					<a href="#" id="comp[i]-addHero[j]" onclick="addHero([i], [j]); return false" class="nav-link">+ Add</a>
 					<div id="hero-select"></div>
 				</div>
 			</div>
+		</template>
+		
+		<template id="single-hero-img-template">
+			<img src="./assets/heroes/[hero1].png" id="comp[i]-img[j]" width="100%">
+		</template>
+		
+		<template id="double-hero-img-template">
+			<img src="./assets/heroes/[hero1].png" id="comp[i]-img[j]" width="50%">
+			<div align="right">
+				<img src="./assets/heroes/[hero2].png" id="comp[i]-img[j]" width="50%" align="right">
+			</div>
+		</template>
+		
+		<template id="triple-hero-img-template">
+			<div align="center">
+				<img src="./assets/heroes/[hero1].png" id="comp[i]-img[j]" width="50%">
+			</div>
+			<img src="./assets/heroes/[hero2].png" id="comp[i]-img[j]" width="50%">
+			<img src="./assets/heroes/[hero3].png" id="comp[i]-img[j]" width="50%" align="right">
+		</template>
+		
+		<template id="quadra-hero-img-template">
+			<img src="./assets/heroes/[hero2].png" id="comp[i]-img[j]" width="50%">
+			<img src="./assets/heroes/[hero1].png" id="comp[i]-img[j]" width="50%" align="right">
+			<img src="./assets/heroes/[hero3].png" id="comp[i]-img[j]" width="50%">
+			<img src="./assets/heroes/[hero4].png" id="comp[i]-img[j]" width="50%" align="right">
 		</template>
 		
 		<template id="add-hero-template">
@@ -411,9 +440,52 @@ else
 		<!-- Optional JavaScript -->
 		<script>
 			function showHero(i, j) {
-				let hero = $("#comp" + i + "-hero" + j).children("option:selected").val();
-				$("#comp" + i + "-img" + j).attr("src", "./assets/heroes/" + hero + ".png");
-			}
+				let heroAmount = $("select#comp" + i + "-hero" + j).length;
+				$("#comp" + i + "-img" + j + "-anchor").html("");
+				switch (heroAmount){
+					case 1:
+						$("#comp" + i + "-img" + j + "-anchor").html($("#single-hero-img-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, j));
+						break;
+					case 2:
+						$("#comp" + i + "-img" + j + "-anchor").html($("#double-hero-img-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, j));
+						break;
+					case 3:
+						$("#comp" + i + "-img" + j + "-anchor").html($("#triple-hero-img-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, j));
+						break;
+					case 4:
+						$("#comp" + i + "-img" + j + "-anchor").html($("#quadra-hero-img-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, j));
+						break;
+					default:
+						
+				}
+				
+				let k = 0;
+				$("select#comp" + i + "-hero" + j + " option:selected").each(function() {
+					let hero = $(this).val();
+					switch(k){
+						case 0:
+							$("#comp" + i + "-img" + j + "-anchor").html($("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero1\]/g, hero));
+							break;
+						case 1:
+							$("#comp" + i + "-img" + j + "-anchor").html($("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero2\]/g, hero));
+							break;
+						case 2:
+							$("#comp" + i + "-img" + j + "-anchor").html($("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero3\]/g, hero));
+							break;
+						case 3:
+							$("#comp" + i + "-img" + j + "-anchor").html($("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero4\]/g, hero));
+							break;
+						default:
+						}
+						k++;
+					});
+					
+					/*
+					let hero = $("#comp" + i + "-hero" + j).children("option:selected").val();
+					$("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero1\]/g, i);
+					$("#comp" + i + "-img" + j).attr("src", "./assets/heroes/" + hero + ".png");
+					*/
+				}
 			
 			function addHero(i, j) {
 				if(compHeroes[i][j - 1] == 1){
@@ -434,6 +506,7 @@ else
 				if(compHeroes[i][j - 1] == 4){
 					$("#comp" + i + "-addHero" + j).remove();
 				}
+				showHero(i, j);
 			}
 			
 			function removeHero(i, j) {
@@ -447,6 +520,7 @@ else
 				if(compHeroes[i][j - 1] == 3){
 					$("#comp" + i + "-removeHero" + j).before($("#add-hero-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, j));
 				}
+				showHero(i, j);
 			}
 			
 			function addComp() {
