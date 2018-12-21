@@ -313,6 +313,7 @@ else
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/slate/bootstrap.min.css">
     <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.min.css">-->
     <link rel="stylesheet" href="./css/component-chosen.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/image-select/2.0/ImageSelect.css">
     <!--<link rel="stylesheet" href="hhttps://cdn.jsdelivr.net/npm/bootstrap-chosen@1.4.2/bootstrap-chosen.min.css">-->
 
     <title>Composition Cheat Sheet Builder</title>
@@ -461,36 +462,36 @@ else
 
 		<template id="hero-select-template">
 			<select data-placeholder="Ana" name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control form-control-chosen">
-				<option value="No Hero">No Hero</option>
-				<option value="Ana" selected>Ana</option>
-				<option value="Ashe">Ashe</option>
-				<option value="Bastion">Bastion</option>
-				<option value="Brigitte">Brigitte</option>
-				<option value="DVa">DVa</option>
-				<option value="Doomfist">Doomfist</option>
-				<option value="Genji">Genji</option>
-				<option value="Hanzo">Hanzo</option>
-				<option value="Junkrat">Junkrat</option>
-				<option value="Lucio">Lucio</option>
-				<option value="McCree">McCree</option>
-				<option value="Mei">Mei</option>
-				<option value="Mercy">Mercy</option>
-				<option value="Moira">Moira</option>
-				<option value="Orisa">Orisa</option>
-				<option value="Pharah">Pharah</option>
-				<option value="Reaper">Reaper</option>
-				<option value="Reinhardt">Reinhardt</option>
-				<option value="Roadhog">Roadhog</option>
-				<option value="Soldier 76">Soldier 76</option>
-				<option value="Sombra">Sombra</option>
-				<option value="Symmetra">Symmetra</option>
-				<option value="Torbjorn">Torbjorn</option>
-				<option value="Tracer">Tracer</option>
-				<option value="Widowmaker">Widowmaker</option>
-				<option value="Winston">Winston</option>
-				<option value="Wrecking Ball">Wrecking Ball</option>
-				<option value="Zarya">Zarya</option>
-				<option value="Zenyatta">Zenyatta</option>
+				<option data-img-src="./assets/heroes/No Hero.png" value="No Hero">No Hero</option>
+				<option data-img-src="./assets/heroes/Ana.png" value="Ana" selected>Ana</option>
+				<option data-img-src="./assets/heroes/Ashe.png" value="Ashe">Ashe</option>
+				<option data-img-src="./assets/heroes/Bastion.png" value="Bastion">Bastion</option>
+				<option data-img-src="./assets/heroes/Brigitte.png" value="Brigitte">Brigitte</option>
+				<option data-img-src="./assets/heroes/DVa.png" value="DVa">DVa</option>
+				<option data-img-src="./assets/heroes/Doomfist.png" value="Doomfist">Doomfist</option>
+				<option data-img-src="./assets/heroes/Genji.png" value="Genji">Genji</option>
+				<option data-img-src="./assets/heroes/Hanzo.png" value="Hanzo">Hanzo</option>
+				<option data-img-src="./assets/heroes/Junkrat.png" value="Junkrat">Junkrat</option>
+				<option data-img-src="./assets/heroes/Lucio.png" value="Lucio">Lucio</option>
+				<option data-img-src="./assets/heroes/McCree.png" value="McCree">McCree</option>
+				<option data-img-src="./assets/heroes/Mei.png" value="Mei">Mei</option>
+				<option data-img-src="./assets/heroes/Mercy.png" value="Mercy">Mercy</option>
+				<option data-img-src="./assets/heroes/Moira.png" value="Moira">Moira</option>
+				<option data-img-src="./assets/heroes/Orisa.png" value="Orisa">Orisa</option>
+				<option data-img-src="./assets/heroes/Pharah.png" value="Pharah">Pharah</option>
+				<option data-img-src="./assets/heroes/Reaper.png" value="Reaper">Reaper</option>
+				<option data-img-src="./assets/heroes/Reinhardt.png" value="Reinhardt">Reinhardt</option>
+				<option data-img-src="./assets/heroes/Roadhog.png" value="Roadhog">Roadhog</option>
+				<option data-img-src="./assets/heroes/Soldier 76.png" value="Soldier 76">Soldier 76</option>
+				<option data-img-src="./assets/heroes/Sombra.png" value="Sombra">Sombra</option>
+				<option data-img-src="./assets/heroes/Symmetra.png" value="Symmetra">Symmetra</option>
+				<option data-img-src="./assets/heroes/Torbjorn.png" value="Torbjorn">Torbjorn</option>
+				<option data-img-src="./assets/heroes/Tracer.png" value="Tracer">Tracer</option>
+				<option data-img-src="./assets/heroes/Widowmaker.png" value="Widowmaker">Widowmaker</option>
+				<option data-img-src="./assets/heroes/Winston.png" value="Winston">Winston</option>
+				<option data-img-src="./assets/heroes/Wrecking Ball.png" value="Wrecking Ball">Wrecking Ball</option>
+				<option data-img-src="./assets/heroes/Zarya.png" value="Zarya">Zarya</option>
+				<option data-img-src="./assets/heroes/Zenyatta.png" value="Zenyatta">Zenyatta</option>
 			</select>
 		</template>
 		
@@ -544,6 +545,7 @@ else
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/image-select/2.0/ImageSelect.jquery.js"></script>
 	
 		
 		<!-- Optional JavaScript -->
@@ -625,11 +627,12 @@ else
 			}
 			
 			function removeHero(i, j) {
+				$("select#comp" + i + "-hero" + j).last().chosen("destroy");
 				$("select#comp" + i + "-hero" + j).last().remove();
 				compHeroes[i][j - 1]--;
 				
 				if(compHeroes[i][j - 1] == 1){
-					$("#comp" + i + "-removeHero" + j).remove();
+					$("#comp" + i + "-removeHero" + j).remove().trigger("chosen:updated");
 				}
 				
 				if(compHeroes[i][j - 1] == 3){
@@ -764,6 +767,7 @@ else
 					l++;
 				});
 				$('.form-control-chosen').chosen();
+				$('.form-control-chosen').trigger("chosen:updated");
 			}
 			
 			function saveCompToFile(i) {
