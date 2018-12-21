@@ -259,13 +259,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	$draw = new ImagickDraw();
 	$bgpixel = new ImagickPixel("black");
 	$width = 900;
-	$height = 150;
+	$height = 30;
 	$imagesToDraw = [];
 	foreach($comps as $comp)
 	{
 		$comp = createComp($comp);
 		$height+= $comp[1];
 		array_push($imagesToDraw, $comp);
+	}
+	
+	if(isset($_POST["image-title-enabled"])){
+		$height += 100;
 	}
 
 	$image->newImage($width, $height, $bgpixel);
@@ -307,6 +311,9 @@ else
     <!-- Bootstrap CSS -->
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/slate/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.min.css">-->
+    <link rel="stylesheet" href="./css/component-chosen.min.css">
+    <!--<link rel="stylesheet" href="hhttps://cdn.jsdelivr.net/npm/bootstrap-chosen@1.4.2/bootstrap-chosen.min.css">-->
 
     <title>Composition Cheat Sheet Builder</title>
   </head>
@@ -453,7 +460,7 @@ else
 		</template>
 
 		<template id="hero-select-template">
-			<select name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control-sm">
+			<select data-placeholder="Ana" name="comp[i]-hero[j][]" id="comp[i]-hero[j]" onchange="showHero([i], [j]); return false" class="form-control form-control-chosen">
 				<option value="No Hero">No Hero</option>
 				<option value="Ana" selected>Ana</option>
 				<option value="Ashe">Ashe</option>
@@ -488,7 +495,7 @@ else
 		</template>
 		
 		<template id="map-select-template">
-			<select name="comp[i]-map[]" id="comp[i]-map[j]" onchange="showMap([i], [j]); return false" class="form-control-sm" disabled>
+			<select data-placeholder="Blizzard World" name="comp[i]-map[]" id="comp[i]-map[j]" onchange="showMap([i], [j]); return false" class="form-control form-control-chosen" disabled>
 				<option value="Adlersbrunn">Adlersbrunn</option>
 				<option value="Ayutthaya">Ayutthaya</option>
 				<option value="Black Forest">Black Forest</option>
@@ -521,7 +528,7 @@ else
 					<button type="button" class="btn btn-primary btn-sm" onclick="importComp([i]); return false">Import Comp</button>
 					<button type="button" class="btn btn-primary btn-sm" onclick="saveCompToFile([i]); return false">Export Comp</button>
 					&nbsp;
-					<select name="comp[i]-premade" id="comp[i]-premade" onchange="loadComp([i]); return false" class="form-control-sm">
+					<select name="comp[i]-premade" id="comp[i]-premade" onchange="loadComp([i]); return false" class="form-control form-control-chosen">
 					</select>
 					<input type="file" accept="application/json" name="comp[i]-file" id="comp[i]-file" style="visibility: hidden;" onchange="loadCompFromCustomFile([i]); return false">
 				</div>
@@ -536,6 +543,7 @@ else
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.jquery.min.js"></script>
 	
 		
 		<!-- Optional JavaScript -->
@@ -612,6 +620,7 @@ else
 				if(compHeroes[i][j - 1] == 4){
 					$("#comp" + i + "-addHero" + j).remove();
 				}
+				$('.form-control-chosen').chosen();
 				showHero(i, j);
 			}
 			
@@ -634,6 +643,7 @@ else
 				compMaps[i]++;
 				$("#comp" + i + "-map" + compMaps[i] + "-select").replaceWith($("#map-select-template").html().replace(/\[i\]/g, i).replace(/\[j\]/g, compMaps[i]));
 				$("#comp" + i + "-map" + compMaps[i]).attr("disabled", !$("#comp" + i + "-map" + compMaps[i]).attr("disabled"));
+				$('.form-control-chosen').chosen();
 			}
 			
 			function removeMap(i, j){
@@ -665,6 +675,8 @@ else
 					location.href = "#comp" + compAmount;
 				}
 				loadCompSelectionBox(compAmount);
+				
+				$('.form-control-chosen').chosen();
 			}
 			
 			function loadComp(i) {
@@ -705,7 +717,6 @@ else
 						heroAmount = value.length;
 					}
 					let difference = $("select#comp" + i + "-hero" + j).length - heroAmount;
-					console.log(difference);
 					if(difference < 0){
 						for(k = 0; k < Math.abs(difference); k++){
 							addHero(i, j);
@@ -717,7 +728,6 @@ else
 					}
 					if($.isArray(value)){
 						for(k = 0; k < heroAmount; k++){
-							console.log(value[k]);
 							$("select#comp" + i + "-hero" + j).eq(k).val(value[k]);							
 						}
 					}else{
@@ -741,7 +751,6 @@ else
 				
 				let l = 1;
 				$.each(json.maps, function(key, value){
-					console.log(value);
 					if(l > 1){
 						addMap(i);						
 					}else{						
@@ -754,6 +763,7 @@ else
 					showMap(i, l);
 					l++;
 				});
+				$('.form-control-chosen').chosen();
 			}
 			
 			function saveCompToFile(i) {
@@ -798,12 +808,10 @@ else
 				$("#comp" + i).before($("#premade-comp-select-template").html().replace(/\[i\]/g, i));
 				$("#comp" + i + "-premade").html($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, "Load premade comp"));
 				$.getJSON("./comps/getcomps.php", function(json) {
-					console.log(json);
 					$.each(json, function(key, value){
-						console.log(key);
-						console.log(value);
 						$("#comp" + i + "-premade").find("option").last().after($("#premade-comp-select-options-template").html().replace(/\[comp-name\]/g, value));
 					});
+					$("#comp" + i + "-premade").trigger("chosen:updated");
 				});
 			}
 			
@@ -816,7 +824,7 @@ else
 			}
 			
 			function toggleMap(i) {
-				$("[id^=comp" + i + "-map] select").attr("disabled", !$("[id^=comp" + i + "-map] select").attr("disabled"));
+				$("[id^=comp" + i + "-map] select").attr("disabled", !$("[id^=comp" + i + "-map] select").attr("disabled")).trigger("chosen:updated");
 				$("#comp" + i + "-add-map").attr("hidden", !$("#comp" + i + "-add-map").attr("hidden"));
 			}
 			
