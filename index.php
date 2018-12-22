@@ -1,5 +1,4 @@
 <?php
-
 function wordWrapAnnotation(&$image, &$draw, $text, $maxWidth)
 {
    $regex = '/( |(?=\p{Han})(?<!\p{Pi})(?<!\p{Ps})|(?=\p{Pi})|(?=\p{Ps}))/u';
@@ -19,7 +18,7 @@ function wordWrapAnnotation(&$image, &$draw, $text, $maxWidth)
             $spacePending = false;
             $line = $goodLine.' '.$str;
          } else {
-            $line = $goodLine.$str;
+			$line = $goodLine.$str;
          }
          $metrics = $image->queryFontMetrics($draw, $line);
          if ($metrics['textWidth'] > $maxWidth) {
@@ -38,7 +37,7 @@ function wordWrapAnnotation(&$image, &$draw, $text, $maxWidth)
    if ($goodLine != '') {
       $linesArr[] = $goodLine;
    }
-
+   
    return [$linesArr, $lineHeight];
 }
 
@@ -66,19 +65,19 @@ function createComp($comp)
 	$image->annotateImage($draw, 20, 80, 0, $comp["name"]);
 	
 	if($comp["maps-enabled"]){
-		$x = 740;
-		$y = 15;
+		$currentX = 740;
+		$currentY = 15;
 		$maps = loadMaps();
 		
 		foreach($comp["maps"] as $map){
-			$image->compositeImage($maps[$map], Imagick::COMPOSITE_DEFAULT, $x, $y);
-			$x -= 65;
+			$image->compositeImage($maps[$map], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY);
+			$currentX -= 65;
 		}
 		
 	}
 	
-	$x = 20;
-	$y = 100;
+	$currentX = 20;
+	$currentY = 100;
 	foreach($comp["comp"] as $hero)
 	{
 		$newheroes = loadHeroes();
@@ -87,92 +86,88 @@ function createComp($comp)
 			$hero = array_reverse($hero);
 			switch (count($hero))
 			{
-			case 2:
-				$i = 0;
-				foreach($hero as $subhero)
-				{
-					$i++;
-					$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
-					if ($i == 1)
+				case 2: {
+					$i = 0;
+					foreach($hero as $subhero)
 					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 45, $y + 40);
+						$i++;
+						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+						if ($i == 1)
+						{
+							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 45, $currentY + 40);
+						}
+
+						if ($i == 2)
+						{
+							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 5, $currentY);
+						}
 					}
-					else
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 5, $y);
-					}
+					break;
 				}
-
-				break;
-
-			case 3:
-				$i = 0;
-				foreach($hero as $subhero)
-				{
-					$i++;
-					$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
-					if ($i == 1)
+				case 3: {
+					$i = 0;
+					foreach($hero as $subhero)
 					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 50, $y + 40);
+						$i++;
+						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+						switch($i){
+							case 1:
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 50, $currentY + 40);
+								break;
+							case 2:
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY + 40);
+								break;
+							case 3:
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 25, $currentY - 5);
+								break;
+						}
 					}
-					else
-					if ($i == 2)
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x, $y + 40);
-					}
-					else
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 25, $y - 5);
-					}
+					break;
 				}
-
-				break;
-
-			case 4:
-				$i = 0;
-				foreach($hero as $subhero)
-				{
-					$i++;
-					$newheroes[$subhero]->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1);
-					if ($i == 1)
+				case 4: {
+					$i = 0;
+					foreach($hero as $subhero)
 					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 35, $y + 50);
+						$i++;
+						$newheroes[$subhero]->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1);
+						switch($i){
+							case 1: {
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 35, $currentY + 50);
+								break;
+							}
+							case 2: {
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX - 10, $currentY + 50);
+								break;
+							}
+							case 3: {
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 15, $currentY + 10);
+								break;
+							}
+							case 4: {
+								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 65, $currentY + 10);
+								break;
+							}
+						}
 					}
-					else
-					if ($i == 2)
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x - 10, $y + 50);
-					}
-					else
-					if ($i == 3)
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 15, $y + 10);
-					}
-					else
-					{
-						$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $x + 65, $y + 10);
-					}
+					break;
 				}
-
-				break;
 			}
 		}
-		else
-		{
-			$image->compositeImage($newheroes[$hero], Imagick::COMPOSITE_DEFAULT, $x, $y);
+		if(gettype($hero) == "string"){
+			$image->compositeImage($newheroes[$hero], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY);
 		}
 
-		$x+= 135.5;
+		$currentX+= 135.5;
 	}
 
-	$x = 20;
-	$y = 260;
+	$currentX = 20;
+	$currentY = 260;
 	$draw->setFontSize(30);
 
 	if($comp["desc-enabled"]){
 		for ($k = 0; $k < count($lines); $k++)
 		{
-			$image->annotateImage($draw, $x, $y + $k * $lineHeight, 0, $lines[$k]);
+			$image->annotateImage($draw, $currentX, $currentY + $k * $lineHeight, 0, $lines[$k]);
 		}
 	}
 	
@@ -238,7 +233,6 @@ function processPost()
 				array_push($comp, $multihero);
 			}
 		}
-		
 		$finalComp = array(
 			"name" => $_POST["comp{$i}-name"],
 			"comp" => $comp,
@@ -278,20 +272,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
 	
-	$y = 0;
+	$currentY = 0;
 	
 	if(isset($_POST["image-title-enabled"])){
 		$draw->setFontSize(100);
 		$image->annotateImage($draw, 20, 100, 0, $_POST["image-title"]);
-		$y += 120;
+		$currentY += 120;
 	}
 	
 	$draw->setFontSize(80);
 
 	foreach($imagesToDraw as $compImage)
 	{
-		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $y);
-		$y+= $compImage[1];
+		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $currentY);
+		$currentY+= $compImage[1];
 	}
 	
 	header("Content-Type: image/png");
@@ -377,9 +371,9 @@ else
 			</div>
 			<div class="row">
 				<div class="col-6 col-md-6 mt-4">
-					<label for="comp[i]-desc"><input type="checkbox" class="form-check-input" id="comp[i]-desc-enabled" name="comp[i]-desc-enabled" onchange="toggleDesc([i]); return false"> Description</label>
+					<label for="comp[i]-desc"><input type="checkbox" class="form-check-input" id="comp[i]-desc-enabled" name="comp[i]-desc-enabled" onchange="toggleDesc([i]); return false" checked> Description</label>
 					<div class="card">
-						<textarea type="text" class="form-control" id="comp[i]-desc" name="comp[i]-desc" rows="4" disabled></textarea>
+						<textarea type="text" class="form-control" id="comp[i]-desc" name="comp[i]-desc" rows="4"></textarea>
 					</div>
 				</div>
 				<div class="col-2 col-md-2 mt-2" id="comp[i]-map1-anchor"><br />
