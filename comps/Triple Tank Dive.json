@@ -1,5 +1,5 @@
 {
-    "name": "Triple tank dive",
+    "name": "Triple Tank Dive (New name?)",
     "comp": [
         "Winston",
         "DVa",
@@ -8,5 +8,8 @@
         "Ana",
         "Lucio"
     ],
-    "description": "I don't know what could be a legit name here."
+    "description": "A 4/2 composition, 4 man dive line and 2 man backline. All in or nothing, played if the enemy doesn't have anything to kill tanks.",
+    "maps": [
+        "Hanamura"
+    ]
 }
