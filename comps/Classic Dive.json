@@ -1,25 +1,15 @@
 {
-    "name": "Classic dive",
+    "name": "Classic Dive",
     "comp": [
-        [
-            "Wrecking Ball",
-            "Winston"
-        ],
+        "Winston",
         "DVa",
         "Genji",
-        [
-            "Sombra",
-            "Tracer"
-        ],
-        [
-            "Lucio",
-            "Ana",
-            "Mercy"
-        ],
-        [
-            "Lucio",
-            "Zenyatta"
-        ]
+        "Tracer",
+        "Lucio",
+        "Zenyatta"
     ],
-    "description": "There will be a lot discussion about what the legit classic dive is. I just include a bit of current meta in it.\nActual composition is: Winston, D.va, Genji, Tracer, Mercy and Zenyatta"
+    "description": "What was the standard dive composition ran by most teams.\nA 3/3, 3 man dive line and 3 man backline. D.va and Lucio only diving if there is no need to peel Zenyatta.",
+    "maps": [
+        "Blizzard World"
+    ]
 }

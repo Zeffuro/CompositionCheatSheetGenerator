@@ -1,0 +1,15 @@
+{
+    "name": "Standard Dive",
+    "comp": [
+        "Winston",
+        "DVa",
+        "Genji",
+        "Tracer",
+        "Mercy",
+        "Zenyatta"
+    ],
+    "description": "What was the standard dive composition ran by most teams.\nA 3/3, 3 man dive line and 3 man backline. D.va only diving if there is no need for peeling.",
+    "maps": [
+        "Blizzard World"
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Goats Characters",
+    "comp": [
+        [
+            "Winston",
+            "Reinhardt"
+        ],
+        "Zarya",
+        [
+            "Winston",
+            "DVa"
+        ],
+        [
+            "Zenyatta",
+            "Brigitte"
+        ],
+        [
+            "Moira",
+            "Ana",
+            "Zenyatta"
+        ],
+        "Lucio"
+    ],
+    "description": "Visual over goats characters if you run the composition without any DPS.",
+    "maps": [
+        "Blizzard World"
+    ]
+}

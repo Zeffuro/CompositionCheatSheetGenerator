@@ -1,0 +1,15 @@
+{
+    "name": "Soldier Dive",
+    "comp": [
+        "Winston",
+        "DVa",
+        "Soldier 76",
+        "Tracer",
+        "Ana",
+        "Zenyatta"
+    ],
+    "description": "Often played in league on Hanamura.\nA 2/4, 2 man dive line and 4 man backline. D.va only diving if there is no need for peeling.",
+    "maps": [
+        "Hanamura"
+    ]
+}

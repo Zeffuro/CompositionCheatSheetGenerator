@@ -1,0 +1,15 @@
+{
+    "name": "Moira Goats",
+    "comp": [
+        "Reinhardt",
+        "Zarya",
+        "DVa",
+        "Brigitte",
+        "Moira",
+        "Lucio"
+    ],
+    "description": "The standard goats composition to play against anything that isn't goats.",
+    "maps": [
+        "Blizzard World"
+    ]
+}
