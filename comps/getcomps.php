@@ -7,4 +7,3 @@ foreach(array_diff(scandir("./"), array('..', '.', "getcomps.php")) as $file){
 }
 
 echo(json_encode($files));
-?>
