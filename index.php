@@ -46,28 +46,41 @@ function createComp($comp)
 	$image = new Imagick();
 	$draw = new ImagickDraw();
 	$bgpixel = new ImagickPixel("black");
-	$height = 260;
+	$heroHeight = 140;
+	$nameMapFontHeight = 80;
+	$spacer = 10;
 	
-	if($comp["desc-enabled"]){
+	$height = $heroHeight + $spacer; // Hero Pictures are 271 / 2 = 135.5
+	$descHeight = 0;
+	
+	if($comp["desc-enabled"] && !empty(trim($comp["description"]))){
 		$description = $comp["description"];
-		
 		$draw->setFontSize(30);
 		list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $description, 850);
-		$height+= $lineHeight * count($lines);
+		$descHeight = $lineHeight * count($lines);
+		$height+= $descHeight;
+	}
+	
+	if(!empty(trim($comp["name"])) || $comp["maps-enabled"]){
+		$height += $nameMapFontHeight;
 	}
 	
 	$image->newImage(900, $height, $bgpixel);
 	$image->setImageFormat("png");
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
-	$draw->setFontSize(80);
+	$draw->setFontSize($nameMapFontHeight);
 	$draw->setFillColor("white");
-	$image->annotateImage($draw, 20, 80, 0, $comp["name"]);
+	
+	if(!empty(trim($comp["name"]))){
+		$image->annotateImage($draw, 20, 80, 0, $comp["name"]);
+		//$image->annotateImage($draw, 20, 80, 0, $height);
+	}
 	
 	if($comp["maps-enabled"]){
 		$currentX = 740;
-		$currentY = 15;
-		$maps = loadMaps();
+		$currentY = 10;
+		$maps = loadMaps($nameMapFontHeight);
 		
 		foreach($comp["maps"] as $map){
 			$image->compositeImage($maps[$map], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY);
@@ -77,10 +90,14 @@ function createComp($comp)
 	}
 	
 	$currentX = 20;
-	$currentY = 100;
+	$currentY = $spacer;
+	
+	if(!empty(trim($comp["name"])) || $comp["maps-enabled"]){
+		$currentY += $nameMapFontHeight;
+	}
+	$allHeroes = loadHeroes();
 	foreach($comp["comp"] as $hero)
 	{
-		$newheroes = loadHeroes();
 		if (gettype($hero) == "array")
 		{
 			$hero = array_reverse($hero);
@@ -91,15 +108,15 @@ function createComp($comp)
 					foreach($hero as $subhero)
 					{
 						$i++;
-						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+						$heroImage = clone $allHeroes[$subhero];
+						$heroImage->scaleImage(90, 90);
 						if ($i == 1)
 						{
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 45, $currentY + 40);
+							$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 45, $currentY + 40);
 						}
-
 						if ($i == 2)
 						{
-							$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 5, $currentY);
+							$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 5, $currentY);
 						}
 					}
 					break;
@@ -109,16 +126,17 @@ function createComp($comp)
 					foreach($hero as $subhero)
 					{
 						$i++;
-						$newheroes[$subhero]->resizeImage(90, 90, Imagick::FILTER_LANCZOS, 1);
+						$heroImage = clone $allHeroes[$subhero];
+						$heroImage->scaleImage(90, 90);
 						switch($i){
 							case 1:
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 50, $currentY + 40);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 50, $currentY + 40);
 								break;
 							case 2:
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY + 40);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX, $currentY + 40);
 								break;
 							case 3:
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 25, $currentY - 5);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 25, $currentY - 5);
 								break;
 						}
 					}
@@ -129,22 +147,23 @@ function createComp($comp)
 					foreach($hero as $subhero)
 					{
 						$i++;
-						$newheroes[$subhero]->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1);
+						$heroImage = clone $allHeroes[$subhero];
+						$heroImage->scaleImage(80, 80);
 						switch($i){
 							case 1: {
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 35, $currentY + 50);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 35, $currentY + 50);
 								break;
 							}
 							case 2: {
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX - 10, $currentY + 50);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX - 10, $currentY + 50);
 								break;
 							}
 							case 3: {
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 15, $currentY + 10);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 15, $currentY + 10);
 								break;
 							}
 							case 4: {
-								$image->compositeImage($newheroes[$subhero], Imagick::COMPOSITE_DEFAULT, $currentX + 65, $currentY + 10);
+								$image->compositeImage($heroImage, Imagick::COMPOSITE_DEFAULT, $currentX + 65, $currentY + 10);
 								break;
 							}
 						}
@@ -154,17 +173,17 @@ function createComp($comp)
 			}
 		}
 		if(gettype($hero) == "string"){
-			$image->compositeImage($newheroes[$hero], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY);
+			$image->compositeImage($allHeroes[$hero], Imagick::COMPOSITE_DEFAULT, $currentX, $currentY);
 		}
 
 		$currentX+= 135.5;
 	}
 
 	$currentX = 20;
-	$currentY = 260;
+	$currentY += $heroHeight + $spacer;
 	$draw->setFontSize(30);
 
-	if($comp["desc-enabled"]){
+	if($comp["desc-enabled"] && !empty(trim($comp["description"]))){
 		for ($k = 0; $k < count($lines); $k++)
 		{
 			$image->annotateImage($draw, $currentX, $currentY + $k * $lineHeight, 0, $lines[$k]);
@@ -186,13 +205,13 @@ function loadHeroes()
 		$name = str_replace(".png", "", $file);
 		$heroes[$name] = new Imagick();
 		$heroes[$name]->readImage("./assets/heroes/{$file}");
-		$heroes[$name]->resizeImage($heroes[$name]->getImageWidth() / 2, $heroes[$name]->getImageWidth() / 2, Imagick::FILTER_LANCZOS, 1);
+		$heroes[$name]->scaleImage($heroes[$name]->getImageWidth() / 2, $heroes[$name]->getImageWidth() / 2);
 	}
 
 	return $heroes;
 }
 
-function loadMaps()
+function loadMaps($imageSize)
 {
 	// Load maps
 	$maps = array();
@@ -204,7 +223,7 @@ function loadMaps()
 		$name = str_replace(".png", "", $file);
 		$maps[$name] = new Imagick();
 		$maps[$name]->readImage("./assets/maps/icons/{$file}");
-		$maps[$name]->resizeImage($maps[$name]->getImageWidth() / 1.5, $maps[$name]->getImageWidth() / 1.5, Imagick::FILTER_LANCZOS, 1);
+		$maps[$name]->scaleImage($imageSize, $imageSize);
 	}
 	return $maps;
 }
@@ -212,20 +231,27 @@ function loadMaps()
 function processPost()
 {
 	$allComps = array();
-	$compAmount = sizeof($_POST) / 8;
+	$compAmount = 0;
+	$safePost = filter_input_array(INPUT_POST);
+	foreach($safePost as $key => $value) {
+		if(preg_match("/comp[\d]+-name/", $key)){
+			$compAmount++;
+		}
+	}
+	
 	for ($i = 1; $i <= $compAmount; $i++)
 	{
 		$comp = array();
 		for ($j = 1; $j <= 6; $j++)
 		{
-			if (sizeof($_POST["comp{$i}-hero{$j}"]) == 1)
+			if (sizeof($safePost["comp{$i}-hero{$j}"]) == 1)
 			{
-				array_push($comp, $_POST["comp{$i}-hero{$j}"][0]);
+				array_push($comp, $safePost["comp{$i}-hero{$j}"][0]);
 			}
 			else
 			{
 				$multihero = array();
-				foreach($_POST["comp{$i}-hero{$j}"] as $hero)
+				foreach($safePost["comp{$i}-hero{$j}"] as $hero)
 				{
 					array_push($multihero, $hero);
 				}
@@ -234,12 +260,12 @@ function processPost()
 			}
 		}
 		$finalComp = array(
-			"name" => $_POST["comp{$i}-name"],
+			"name" => $safePost["comp{$i}-name"],
 			"comp" => $comp,
-			"desc-enabled" => isset($_POST["comp{$i}-desc-enabled"]),
-			"description" => $_POST["comp{$i}-desc"],
-			"maps-enabled" => isset($_POST["comp{$i}-map-enabled"]),
-			"maps" => $_POST["comp{$i}-map"]
+			"desc-enabled" => isset($safePost["comp{$i}-desc-enabled"]),
+			"description" => $safePost["comp{$i}-desc"],
+			"maps-enabled" => isset($safePost["comp{$i}-map-enabled"]),
+			"maps" => $safePost["comp{$i}-map"]
 		);
 		array_push($allComps, $finalComp);
 	}
@@ -248,47 +274,50 @@ function processPost()
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
+	header("Content-Type: image/png");
 	$comps = processPost();
 	$image = new Imagick();
 	$draw = new ImagickDraw();
-	$bgpixel = new ImagickPixel("black");
-	$width = 900;
-	$height = 30;
+	$bgpixel = new ImagickPixel("black");	
+	$imageWidth = 900;
+	$imageHeight = 0;
+	$titleHeight = 100;
 	$imagesToDraw = [];
-	foreach($comps as $comp)
+	
+	$safePost = filter_input_array(INPUT_POST);
+	
+	foreach($comps as $heroComp)
 	{
-		$comp = createComp($comp);
-		$height+= $comp[1];
+		$comp = createComp($heroComp);
+		$imageHeight+= $comp[1];
 		array_push($imagesToDraw, $comp);
 	}
 	
-	if(isset($_POST["image-title-enabled"])){
-		$height += 100;
+	
+	if(isset($safePost["image-title-enabled"])){
+		$imageHeight += $titleHeight;
 	}
 
-	$image->newImage($width, $height, $bgpixel);
+	$image->newImage($imageWidth, $imageHeight, $bgpixel);
 	$image->setImageFormat("png");
 	$draw->setFillColor("white");
 	$draw->setFont("./assets/bignoodletoo.ttf");
 	$draw->setFontStyle(Imagick::STYLE_ITALIC);
 	
-	$currentY = 0;
+	$imageY = 0;
 	
-	if(isset($_POST["image-title-enabled"])){
+	if(isset($safePost["image-title-enabled"])){
 		$draw->setFontSize(100);
-		$image->annotateImage($draw, 20, 100, 0, $_POST["image-title"]);
-		$currentY += 120;
+		$image->annotateImage($draw, 20, $titleHeight, 0, $safePost["image-title"]);
+		$imageY += $titleHeight;
 	}
-	
-	$draw->setFontSize(80);
 
 	foreach($imagesToDraw as $compImage)
 	{
-		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $currentY);
-		$currentY+= $compImage[1];
+		$image->compositeImage($compImage[0], Imagick::COMPOSITE_DEFAULT, 0, $imageY);
+		$imageY+= $compImage[1];
 	}
 	
-	header("Content-Type: image/png");
 	echo $image;
 }
 else
@@ -303,12 +332,9 @@ else
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/slate/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.min.css">-->
     <link rel="stylesheet" href="./css/component-chosen.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/image-select/2.0/ImageSelect.css">
-    <!--<link rel="stylesheet" href="hhttps://cdn.jsdelivr.net/npm/bootstrap-chosen@1.4.2/bootstrap-chosen.min.css">-->
 
     <title>Composition Cheat Sheet Builder</title>
   </head>
@@ -519,14 +545,14 @@ else
 		
 		<template id="premade-comp-select-template">
 			<div class="row">
-				<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mt-4 btn-group" role="group">
+				<div class="col-6 mt-4 btn-group" role="group">
 					<button type="button" class="btn btn-primary btn-sm" onclick="importComp([i]); return false">Import Comp</button>
 					<button type="button" class="btn btn-primary btn-sm" onclick="saveCompToFile([i]); return false">Export Comp</button>
 					&nbsp;
-					<select name="comp[i]-premade" id="comp[i]-premade" onchange="loadComp([i]); return false" class="form-control form-control-chosen">
-					</select>
-					<input type="file" accept="application/json" name="comp[i]-file" id="comp[i]-file" style="visibility: hidden;" onchange="loadCompFromCustomFile([i]); return false">
+					<select width="400px" name="comp[i]-premade" id="comp[i]-premade" onchange="loadComp([i]); return false" class="form-control form-control-chosen">
+					</select><br />
 				</div>
+				<input type="file" accept="application/json" name="comp[i]-file" id="comp[i]-file" style="visibility: hidden;" onchange="loadCompFromCustomFile([i]); return false">
 			</div>
 		</template>
 		
@@ -541,7 +567,6 @@ else
 		<script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/image-select/2.0/ImageSelect.jquery.js"></script>
 	
-		
 		<!-- Optional JavaScript -->
 		<script>
 			function showHero(i, j) {
@@ -584,12 +609,6 @@ else
 					}
 					k++;
 				});
-					
-					/*
-					let hero = $("#comp" + i + "-hero" + j).children("option:selected").val();
-					$("#comp" + i + "-img" + j + "-anchor").html().replace(/\[hero1\]/g, i);
-					$("#comp" + i + "-img" + j).attr("src", "./assets/heroes/" + hero + ".png");
-					*/
 			}
 			
 			function showMap(i, j) {
@@ -715,21 +734,21 @@ else
 					}
 					let difference = $("select#comp" + i + "-hero" + j).length - heroAmount;
 					if(difference < 0){
-						for(k = 0; k < Math.abs(difference); k++){
+						for(let k = 0; k < Math.abs(difference); k++){
 							addHero(i, j);
 						}
 					}else if (difference > 0){
-						for(k = 0; k < difference; k++){
+						for(let k = 0; k < difference; k++){
 							removeHero(i, j);
 						}
 					}
 					if($.isArray(value)){
-						for(k = 0; k < heroAmount; k++){
+						for(let k = 0; k < heroAmount; k++){
 							$("select#comp" + i + "-hero" + j).eq(k).val(value[k]);							
 						}
 					}else{
 						if($("select#comp" + i + "-hero" + j).length > 1){
-							for(k = 0; k <= $("select#comp" + i + "-hero" + j).length; k++){
+							for(let k = 0; k <= $("select#comp" + i + "-hero" + j).length; k++){
 								removeHero(i, j);
 							}
 						}
@@ -741,7 +760,7 @@ else
 				
 				compMaps[i] = 1;
 				if($("[id^=comp" + i + "-map] select").length > 1){
-					for(k = 2; k <= $("[id^=comp" + i + "-map] select").length; k++){
+					for(let k = 2; k <= $("[id^=comp" + i + "-map] select").length; k++){
 						$("comp" + i + "-map" + k + "-anchor").remove();
 					}
 				}
@@ -770,10 +789,10 @@ else
 				
 				let comp = [];
 				
-				for(j = 1; j <= 6; j++){
+				for(let j = 1; j <= 6; j++){
 					if($("select#comp" + i + "-hero" + j).length > 1){
 						let subHeroes = [];
-						for(k = 0; k < $("select#comp" + i + "-hero" + j).length; k++){
+						for(let k = 0; k < $("select#comp" + i + "-hero" + j).length; k++){
 							subHeroes.push($("select#comp" + i + "-hero" + j).eq(k).val());
 						}
 						comp.push(subHeroes);
@@ -784,7 +803,7 @@ else
 				
 				let maps = [];
 				
-				for(l = 0; l < $("[id^=comp" + 1 + "-map] select").length; l++){
+				for(let l = 0; l < $("[id^=comp" + 1 + "-map] select").length; l++){
 					maps.push($("[id^=comp" + 1 + "-map] select").eq(l).val());
 				}
 								
