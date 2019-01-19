@@ -1,12 +1,20 @@
 {
     "name": "Treehouse",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
     "comp": [
         "Orisa",
         "DVa",
         "Widowmaker",
         "Junkrat",
-        "Zenyatta",
-        "Mercy"
+        "Mercy",
+        "Zenyatta"
     ],
     "description": "Ran on maps with good high ground. The entire team wants to remain in the backline giving space to the dps and having D.va contest the point. Best maps: King's Row and Anubis",
     "maps": [

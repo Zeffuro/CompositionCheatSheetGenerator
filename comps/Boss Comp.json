@@ -1,0 +1,26 @@
+{
+    "name": "Boss comp!",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
+    "comp": [
+        "Orisa",
+        "DVa",
+        "Bastion",
+        "Symmetra",
+        [
+            "Mercy",
+            "Zenyatta"
+        ],
+        "Ana"
+    ],
+    "description": "Set up your camp and be ready to move. Protect your boss, before he gives you a pay cut.\nComposition is weak against Sombra, and strong on high ground.",
+    "maps": [
+        "Blizzard World"
+    ]
+}

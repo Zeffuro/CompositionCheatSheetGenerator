@@ -1,5 +1,5 @@
 {
-    "name": "Sheriff",
+    "name": "Double Sniper",
     "playernames": [
         "Main Tank",
         "Off Tank",
@@ -11,16 +11,16 @@
     "comp": [
         [
             "Winston",
-            "Reinhardt",
-            "Orisa"
+            "Orisa",
+            "Reinhardt"
         ],
         "DVa",
-        "McCree",
-        "Brigitte",
-        "Lucio",
+        "Widowmaker",
+        "Hanzo",
+        "Mercy",
         "Zenyatta"
     ],
-    "description": "A mobile composition meant for countering dive. Has a 4 man backline that pokes the enemy down, while staying together deterring a dive.",
+    "description": "A pick composition, that sets up crossfires. Tanks focusing on stalling the enemy. The composition is weak against dive.",
     "maps": [
         "Blizzard World"
     ]

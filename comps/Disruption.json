@@ -1,25 +1,26 @@
 {
     "name": "Disruption",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
     "comp": [
         [
-            "Winston",
-            "Wrecking Ball"
+            "Wrecking Ball",
+            "Winston"
         ],
         "DVa",
-        [
-            "Doomfist",
-            "Pharah"
-        ],
         "Sombra",
-        [
-            "Mercy",
-            "Ana"
-        ],
-        [
-            "Mercy",
-            "Lucio",
-            "Zenyatta"
-        ]
+        "Pharah",
+        "Mercy",
+        "Ana"
     ],
-    "description": "It's still in the works?? Let's see if you can see what I wrote here. Tell me if you could see it."
+    "description": "A composition meant for countering goats. Split the goats composition up and start killing them.",
+    "maps": [
+        "Blizzard World"
+    ]
 }

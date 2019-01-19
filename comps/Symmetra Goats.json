@@ -1,0 +1,23 @@
+{
+    "name": "Symmetra Goats",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
+    "comp": [
+        "Reinhardt",
+        "DVa",
+        "Zarya",
+        "Symmetra",
+        "Lucio",
+        "Moira"
+    ],
+    "description": "A goats composition meant for getting past heavy choke control.",
+    "maps": [
+        "Blizzard World"
+    ]
+}

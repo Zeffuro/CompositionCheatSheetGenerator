@@ -1,0 +1,27 @@
+{
+    "name": "Goats",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
+    "comp": [
+        "Reinhardt",
+        "DVa",
+        "Zarya",
+        "Brigitte",
+        "Lucio",
+        [
+            "Moira",
+            "Ana",
+            "Zenyatta"
+        ]
+    ],
+    "description": "Triple tank and triple support. A compositions that has great point presence and durability if the team sticks together.\nGreat map for the composition: King's Row",
+    "maps": [
+        "Kings Row"
+    ]
+}

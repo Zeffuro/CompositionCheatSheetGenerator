@@ -1,14 +1,22 @@
 {
     "name": "Standard Dive",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
     "comp": [
         "Winston",
         "DVa",
-        "Genji",
         "Tracer",
+        "Genji",
         "Mercy",
         "Zenyatta"
     ],
-    "description": "What was the standard dive composition ran by most teams.\nA 3/3, 3 man dive line and 3 man backline. D.va only diving if there is no need for peeling.",
+    "description": "A standard dive composition ran by most OWL teams, during moth meta.\nA 3/3, 3 man dive line and 3 man backline. D.va only diving if there is no need for peeling.",
     "maps": [
         "Blizzard World"
     ]

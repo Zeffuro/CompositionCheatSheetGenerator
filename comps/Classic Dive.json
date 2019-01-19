@@ -1,14 +1,22 @@
 {
     "name": "Classic Dive",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
     "comp": [
         "Winston",
         "DVa",
-        "Genji",
         "Tracer",
+        "Genji",
         "Lucio",
         "Zenyatta"
     ],
-    "description": "What was the standard dive composition ran by most teams.\nA 3/3, 3 man dive line and 3 man backline. D.va and Lucio only diving if there is no need to peel Zenyatta.",
+    "description": "The classic dive composition ran by most teams.\nA 3/3, 3 man dive line and 3 man backline. D.va and Lucio only diving if there is no need to peel Zenyatta.",
     "maps": [
         "Blizzard World"
     ]
