@@ -1,0 +1,37 @@
+{
+    "name": "Meta",
+    "playernames": [
+        "Main Tank",
+        "Off Tank",
+        "Hitscan DPS",
+        "Flex DPS",
+        "Main Support",
+        "Flex Support"
+    ],
+    "comp": [
+        "Orisa",
+        [
+            "Roadhog",
+            "DVa"
+        ],
+        [
+            "Hanzo",
+            "Reaper"
+        ],
+        "Mei",
+        [
+            "Baptiste",
+            "Mercy",
+            "Lucio"
+        ],
+        [
+            "Zenyatta",
+            "Ana",
+            "Moira"
+        ]
+    ],
+    "description": "This is what has been meta on OWL patch in recent matches. Doesn't translate 1:1 over to live patch.\nThe support line picks is up for the most debate, it varies based on the different teams specialties.\nD.va is most played, because Mei will block hook, so they play D.va to have counterplay against DPS. Roadhog is still played by many teams though, some teams play Zarya and invest into the neutral before the ultimates are ready.",
+    "maps": [
+        "Blizzard World"
+    ]
+}
